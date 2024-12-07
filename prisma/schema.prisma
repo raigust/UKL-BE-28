@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+enum Role {
+  Admin
+  User
+}
+enum category {
+  elektronik
+  nonElektronik
+}
+model User {
+  iduser          Int      @id @default(autoincrement())
+  username        String   @default("")@unique
+  password        String   @default("")
+  role            Role     @default(User)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  Pinjam          Pinjam   [] 
+}
+
+model Inventory {
+  idinven       Int      @id @default(autoincrement())
+  name          String   
+  category      category 
+  location      String
+  quantity      Int          
+
+  Pinjam        Pinjam []  
+}
+
+model Pinjam {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  inventoryId   Int
+  pinjamDate        DateTime @db.Date
+  kembalikanDate    DateTime @db.Date   
+  actualReturnDate  DateTime? 
+  user          User      @relation(fields: [userId], references: [iduser])
+  inventory     Inventory @relation(fields: [inventoryId], references: [idinven])
+}
